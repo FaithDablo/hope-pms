@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react'; // Idinagdag ang useState at useEffect
+import { useState, useEffect } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // Tiyaking tama ang path na ito
+import { supabase } from '../lib/supabase'; 
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null); // State para sa user data
+  const [user, setUser] = useState(null); 
 
   useEffect(() => {
-    // Kunin ang kasalukuyang session ng user pagka-load ng page
     const getSession = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
@@ -16,7 +15,6 @@ const Layout = ({ children }) => {
 
     getSession();
 
-    // Makinig sa auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -35,7 +33,6 @@ const Layout = ({ children }) => {
     { icon: 'admin_panel_settings', label: 'Admin', path: '/admin' },
   ];
 
-  // Helper para sa Display Name
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest User';
 
   return (
