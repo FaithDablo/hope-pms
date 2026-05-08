@@ -27,7 +27,6 @@ export const UserRightsProvider = ({ children }) => {
       }
       setLoading(false);
     };
-
     fetchRights();
   }, [user]);
 
