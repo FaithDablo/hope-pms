@@ -1,22 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import AuthCallback from './pages/AuthCallback';
+import { useRights } from './context/UserRightsContext';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Ito ang lalabas kapag tinype ang /login */}
-        <Route path="/login" element={<Login />} />
-        
-        {/* Ito ang kailangan ng Google OAuth */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        
-        {/* Ang Main Page */}
-        <Route path="/" element={<h1>Welcome to HopePMS!</h1>} />
-      </Routes>
-    </Router>
-  );
-}
+// Sa loob ng component:
+const { rights } = useRights();
 
-export default App;
+// Halimbawa sa Add button:
+{rights.PRD_ADD === 1 && <button>Add Product</button>}
+
+// Halimbawa sa Delete button (dapat hidden ito base sa SQL natin kanina):
+{rights.PRD_DEL === 1 && <button>Delete</button>}
