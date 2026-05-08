@@ -3,10 +3,6 @@ import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import './App.css';
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-// import Register from './pages/Register'; // I-uncomment kapag gawa na ang Register.jsx
-
 function App() {
   return (
     <Router>

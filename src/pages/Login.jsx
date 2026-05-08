@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
 import { supabase } from '../lib/supabase'; // Siguraduhing tama ang path
 
 const Login = () => {
