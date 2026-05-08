@@ -38,3 +38,5 @@ export const UserRightsProvider = ({ children }) => {
 };
 
 export const useRights = () => useContext(UserRightsContext);
+
+// Final Push for PR-01 - Specialist Fix
