@@ -1,19 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
+import './App.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Ito ang lalabas kapag tinype ang /login */}
         <Route path="/login" element={<Login />} />
-        
-        {/* Ito ang kailangan ng Google OAuth */}
         <Route path="/auth/callback" element={<AuthCallback />} />
-        
-        {/* Ang Main Page */}
-        <Route path="/" element={<h1>Welcome to HopePMS!</h1>} />
+        {/* I-redirect ang root sa login para makita agad ang dinesign mong UI */}
+        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
   );
