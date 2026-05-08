@@ -1,0 +1,7 @@
+ALTER TABLE product
+ADD COLUMN record_status VARCHAR(10),
+ADD COLUMN stamp VARCHAR(60);
+
+ALTER TABLE pricehist
+ADD COLUMN record_status VARCHAR(10),
+ADD COLUMN stamp VARCHAR(60);
