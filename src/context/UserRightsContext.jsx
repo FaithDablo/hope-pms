@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase'; // Siguraduhing tugma sa inyong lib path (pwedeng '../lib/supabase' o '../supabaseClient')
 import { useAuth } from './AuthContext';
 
 const UserRightsContext = createContext();
@@ -11,11 +11,8 @@ export const UserRightsProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchRights = async () => {
- feat/rights-sidebar
       if (user?.id) {
-
-      if (user) {
- dev
+        setLoading(true);
         const { data, error } = await supabase
           .from('UserModule_Rights')
           .select('module_code, has_access')
@@ -28,6 +25,8 @@ export const UserRightsProvider = ({ children }) => {
           }, {});
           setRights(rightsMap);
         }
+      } else {
+        setRights({});
       }
       setLoading(false);
     };
@@ -35,8 +34,7 @@ export const UserRightsProvider = ({ children }) => {
     fetchRights();
   }, [user]);
 
- feat/rights-sidebar
-  // Centralized Gating Logic para sa Sprint 2
+  // Centralized Gating Logic na kailangan natin para sa Dashboard at SuperAdmin checks
   const value = {
     rights,
     loading,
@@ -48,16 +46,11 @@ export const UserRightsProvider = ({ children }) => {
 
   return (
     <UserRightsContext.Provider value={value}>
-
-  return (
-    <UserRightsContext.Provider value={{ rights, loading }}>
- dev
       {children}
     </UserRightsContext.Provider>
   );
 };
 
- feat/rights-sidebar
 export const useRights = () => {
   const context = useContext(UserRightsContext);
   if (!context) {
@@ -65,6 +58,3 @@ export const useRights = () => {
   }
   return context;
 };
-
-export const useRights = () => useContext(UserRightsContext);
- dev
