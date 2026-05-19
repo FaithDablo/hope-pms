@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase'; // Siguraduhing tugma sa inyong lib path (pwedeng '../lib/supabase' o '../supabaseClient')
+import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
 
 const UserRightsContext = createContext();
@@ -25,8 +25,6 @@ export const UserRightsProvider = ({ children }) => {
           }, {});
           setRights(rightsMap);
         }
-      } else {
-        setRights({});
       }
       setLoading(false);
     };
@@ -34,7 +32,7 @@ export const UserRightsProvider = ({ children }) => {
     fetchRights();
   }, [user]);
 
-  // Centralized Gating Logic na kailangan natin para sa Dashboard at SuperAdmin checks
+  // Centralized Gating Logic para sa Sprint 2 at proteksyon
   const value = {
     rights,
     loading,
