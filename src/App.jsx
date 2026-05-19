@@ -4,12 +4,12 @@ import { AuthProvider } from './context/AuthContext';
 import { UserRightsProvider } from './context/UserRightsContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import AuditLogs from './pages/AuditLogs'; // Inimport ang bagong pahina natin
+import AuditLogs from './pages/AuditLogs'; // Successfully imported the newly created audit module page
 import AdminRoute from './components/AdminRoute';
 
-// Temporary placeholders para sa protected routes
-const UserManagement = () => <div className="pl-64 p-8"><h2>User Management (Admin Only)</h2></div>;
-const Settings = () => <div className="pl-64 p-8"><h2>System Settings (Admin Only)</h2></div>;
+// Temporary fallback shell components (Swap with separate dedicated view files upon production release)
+const UserManagement = () => <div className="pl-64 p-8"><h2 className="text-xl font-semibold text-slate-800">User Management (Admin Core Only)</h2></div>;
+const Settings = () => <div className="pl-64 p-8"><h2 className="text-xl font-semibold text-slate-800">System Settings (Admin Core Only)</h2></div>;
 
 function App() {
   return (
@@ -17,13 +17,13 @@ function App() {
       <AuthProvider>
         <UserRightsProvider>
           <Routes>
-            {/* Public Route */}
+            {/* 🌐 Public Route: Authentication Terminal Gateway */}
             <Route path="/login" element={<Login />} />
 
-            {/* General Protected Route */}
+            {/* 📊 General Protected Route: Shared Authenticated Workspace */}
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* 🔒 SUPERADMIN / ADMIN ONLY ROUTES */}
+            {/* 🔒 HIGH-PRIVILEGE ADMINISTRATIVE MODULE ENTRIES (GATED BY HOC SECURITY STRATEGY) */}
             <Route 
               path="/users" 
               element={
@@ -49,7 +49,7 @@ function App() {
               } 
             />
 
-            {/* Fallback */}
+            {/* 🔄 Fallback Redirection Wildcard */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </UserRightsProvider>
