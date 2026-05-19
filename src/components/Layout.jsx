@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect, cloneElement } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase'; 
 
@@ -6,6 +6,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null); 
+  const [searchQuery, setSearchQuery] = useState(''); // Estado para sa Search Input
 
   useEffect(() => {
     const getSession = async () => {
@@ -27,9 +28,18 @@ const Layout = ({ children }) => {
     navigate('/login');
   };
 
+  const userRole = user?.user_metadata?.role || 'USER';
+  const isAdmin = userRole === 'ADMIN' || userRole === 'SUPERADMIN';
+
   const navLinks = [
-    { icon: 'inventory_2', label: 'Product List', path: '/dashboard' },
+    { icon: 'inventory_2', label: 'Product List', path: '/products' }, 
     { icon: 'bar_chart', label: 'Reports', path: '/reports' },
+    
+    // PR-04: Sidebar 'Deleted Items'
+    ...(isAdmin ? [
+      { icon: 'delete_sweep', label: 'Deleted Items', path: '/deleted-items' }
+    ] : []),
+    
     { icon: 'admin_panel_settings', label: 'Admin', path: '/admin' },
   ];
 
@@ -55,7 +65,9 @@ const Layout = ({ children }) => {
             <button 
               key={link.path}
               onClick={() => navigate(link.path)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl font-medium transition-colors ${location.pathname === link.path ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100'}`}
+              className={`w-full flex items-center gap-3 p-3 rounded-xl font-medium transition-colors ${
+                location.pathname === link.path ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100'
+              }`}
             >
               <span className="material-symbols-outlined">{link.icon}</span> {link.label}
             </button>
@@ -63,7 +75,10 @@ const Layout = ({ children }) => {
         </nav>
         
         <div className="border-t border-slate-200 pt-6 space-y-3 relative">
-           <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700">
+          <button 
+            onClick={() => navigate('/products')} 
+            className="w-full flex items-center gap-3 p-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700"
+          >
             <span className="material-symbols-outlined">add</span> New Product
           </button>
           
@@ -80,7 +95,14 @@ const Layout = ({ children }) => {
         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8">
           <div className="relative w-96">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-            <input type="search" placeholder="Search system settings..." className="w-full pl-12 pr-4 py-3 bg-slate-100 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+            {/* PINAGANA ANG SEARCH INPUT */}
+            <input 
+              type="search" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products by code or name..." 
+              className="w-full pl-12 pr-4 py-3 bg-slate-100 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-700" 
+            />
           </div>
           <div className="flex items-center gap-6">
             <IconButton icon="notifications" />
@@ -90,7 +112,7 @@ const Layout = ({ children }) => {
             <div className="flex items-center gap-3 border-l pl-6 border-slate-100">
               <div className="text-right">
                 <p className="font-semibold text-indigo-950 capitalize">{displayName}</p>
-                <p className="text-xs text-slate-500">{user ? 'Authorized Access' : 'Guest'}</p>
+                <p className="text-xs text-slate-500">{user ? `${userRole} Access` : 'Guest'}</p>
               </div>
               <img 
                 src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user?.id || 'default'}`} 
@@ -103,14 +125,14 @@ const Layout = ({ children }) => {
 
         {/* PAGE CONTENT */}
         <main className="flex-1 overflow-auto p-8 bg-slate-100">
-          {children}
+          {/* I-papasa ang searchQuery string sa laman/children ng Layout */}
+          {cloneElement(children, { searchQuery })}
         </main>
       </div>
     </div>
   );
 };
 
-// Helper Components
 const NavLink = ({ icon, label }) => (
   <a href="#" className="flex items-center gap-3 p-3 rounded-xl text-slate-600 font-medium hover:bg-slate-100 transition-colors">
     <span className="material-symbols-outlined">{icon}</span> {label}
