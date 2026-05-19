@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { supabase } from '../lib/supabase'; // Tiyaking tugma ito sa setup niyo (pwedeng '../lib/supabase' o '../supabaseClient')
+import { supabase } from '../lib/supabase'; // Targets your project's unified client initialization instance
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // PATH 1: Email & Password Authenticator
+  // PATH 1: Traditional Email & Password Credential Authenticator Strategy
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
     if (error) {
       alert(error.message);
     } else {
@@ -19,27 +21,31 @@ const Login = () => {
     setLoading(false);
   };
 
-  // PATH 2: Google OAuth Provider Link
+  // PATH 2: Federated Identity Provider (Google OAuth) Pipeline
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/auth/callback' },
+      options: { 
+        // Generates dynamic redirect path routing relative to the executing environment host context
+        redirectTo: window.location.origin + '/auth/callback' 
+      },
     });
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 relative font-['Inter']">
       
-      {/* Glassmorphism Background Shapes */}
+      {/* Structural Glassmorphic Background Canvas Visual Elements */}
       <div className="fixed inset-0 -z-10 bg-[#f8faff]">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#3525cd]/10 rounded-full blur-[120px] animate-pulse delay-1000"></div>
         <div className="absolute inset-0 backdrop-blur-[100px]"></div>
       </div>
 
-      {/* Main Compact Core View */}
+      {/* Main Form Entry Portal Component Frame */}
       <main className="w-full max-w-[450px] z-10 p-4">
-        {/* Top Branding Banner */}
+        
+        {/* Top Core Brand Panel Banner */}
         <div className="flex flex-col items-center mb-6 text-center">
           <div className="bg-[#3525cd] shadow-lg shadow-[#3525cd]/30 p-2 rounded-xl mb-3 relative">
             <span className="material-symbols-outlined text-white text-3xl block">inventory_2</span>
@@ -51,7 +57,7 @@ const Login = () => {
           <p className="text-sm text-[#464555] mt-1 font-medium">Hope.Inc @2026</p>
         </div>
 
-        {/* Form Container with Premium Glass Effect */}
+        {/* Input Interface Wrapper featuring Frosted Glass Aesthetic Effects */}
         <div className="bg-white/70 backdrop-blur-md border border-white/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl overflow-hidden p-6 md:p-8">
           
           <div className="mb-6">
@@ -60,7 +66,7 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            {/* Email Field Wrapper */}
+            {/* Email Field Node Input Wrapper */}
             <div>
               <label className="block text-xs font-semibold text-[#0b1c30] mb-1 uppercase tracking-wider">Email address</label>
               <div className="relative">
@@ -76,7 +82,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Password Field Wrapper */}
+            {/* Password Field Node Input Wrapper */}
             <div>
               <div className="flex justify-between mb-1">
                 <label className="text-xs font-semibold text-[#0b1c30] uppercase tracking-wider">Password</label>
@@ -95,7 +101,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Submit Action Button */}
+            {/* Core Submit Interface Form Access Button */}
             <button 
               className="w-full bg-[#3525cd] hover:bg-[#2b1ea3] text-white font-medium py-3 rounded-lg shadow-md active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed" 
               type="submit" 
@@ -105,7 +111,7 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Graphical Split Line */}
+          {/* Visual Element Divider Line */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#c7c4d8]"></div>
@@ -115,7 +121,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Social Google Provider Button */}
+          {/* Third-Party Social Identity Google Gateway Access Trigger */}
           <button 
             onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#c7c4d8] rounded-lg bg-white/80 hover:bg-white shadow-sm transition-all active:scale-[0.98]" 
@@ -126,7 +132,7 @@ const Login = () => {
           </button>
         </div>
 
-        {/* Footer Area */}
+        {/* Workspace Footer Information Panel */}
         <div className="mt-8 text-center">
           <p className="text-xs text-[#464555]">
             Don't have an account? <a className="text-[#3525cd] font-bold hover:underline" href="/register">Create now</a>
