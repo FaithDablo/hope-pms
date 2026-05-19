@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient'; // Path papunta sa client mo
+import { supabase } from '../supabaseClient'; 
 
+// 1. Create the Global Authentication Context
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
@@ -8,47 +9,80 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Kunin ang current session
+    // A. Fetch initial active session upon application mount
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) checkUserStatus(session.user);
-      setLoading(false);
+      if (session) {
+        checkUserStatus(session.user);
+      } else {
+        setLoading(false);
+      }
     });
 
-    // 2. Makinig sa Login/Logout events
+    // B. Subscribe to auth lifecycle events (e.g., SIGNED_IN, SIGNED_OUT)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         checkUserStatus(session.user);
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
+    // C. Clean up the real-time websocket subscription on component unmount
     return () => subscription.unsubscribe();
   }, []);
 
-  // LOGIN GUARD (M4 Role Requirement)
+  /**
+   * SECURITY GUARD: Validates user status and role assignments against the database
+   * Forcefully logs out accounts flagged with an 'INACTIVE' record status.
+   */
   const checkUserStatus = async (currentUser) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', currentUser.id)
-      .single();
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
 
-    if (profile?.record_status === 'INACTIVE') {
-      alert("🛑 ACCESS DENIED: Your account is INACTIVE. Contact Admin.");
-      await supabase.auth.signOut();
+      if (error) throw error;
+
+      if (profile?.record_status === 'INACTIVE') {
+        alert("🛑 ACCESS DENIED: Your account is INACTIVE. Please contact your System Administrator.");
+        await supabase.auth.signOut();
+        setUser(null);
+      } else {
+        // Merge Supabase Auth metadata with customized public profile data (e.g., user_type)
+        setUser({ ...currentUser, ...profile });
+      }
+    } catch (err) {
+      console.error("Error verifying user status profile:", err.message);
       setUser(null);
-    } else {
-      setUser(currentUser);
+    } finally {
+      setLoading(false);
     }
   };
 
+  /**
+   * Standardized application logout sequence
+   */
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, signOut }}>
+      {/* Block child rendering until initial verification sequence finishes */}
       {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// 2. Custom hook for consuming authentication status securely across application pages
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
