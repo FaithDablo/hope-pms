@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+ feat/ui-product-list
+ test/sprint1-auth-flows-final
+
+ dev
 "scripts": {
   "dev": "vite",
   "build": "vite build",
@@ -10,12 +14,17 @@
   "preview": "vite preview",
   "test": "vitest"
 },
+ feat/ui-product-list
+
+
+ dev
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+ main
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
     "react": "^19.2.5",
