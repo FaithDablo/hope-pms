@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import AuthCallback from './pages/AuthCallback';
+ feat/rights-sidebar
 import { UserRightsProvider, useRights } from './context/UserRightsContext';
 
 // Ginawa nating hiwalay na component ang Dashboard para magamit ang useRights() hook
@@ -84,6 +87,37 @@ function App() {
         </Routes>
       </Router>
     </UserRightsProvider>
+
+import Layout from './components/Layout';
+import './App.css';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Pag open ng site, rekta sa Login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Dashboard Route na nakabalot sa Layout */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          } 
+        />
+
+        {/* Fallback: Kapag maling URL ang tinype, babalik sa login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
+ dev
   );
 }
 

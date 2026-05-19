@@ -11,7 +11,11 @@ export const UserRightsProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchRights = async () => {
+ feat/rights-sidebar
       if (user?.id) {
+
+      if (user) {
+ dev
         const { data, error } = await supabase
           .from('UserModule_Rights')
           .select('module_code, has_access')
@@ -31,6 +35,7 @@ export const UserRightsProvider = ({ children }) => {
     fetchRights();
   }, [user]);
 
+ feat/rights-sidebar
   // Centralized Gating Logic para sa Sprint 2
   const value = {
     rights,
@@ -43,11 +48,16 @@ export const UserRightsProvider = ({ children }) => {
 
   return (
     <UserRightsContext.Provider value={value}>
+
+  return (
+    <UserRightsContext.Provider value={{ rights, loading }}>
+ dev
       {children}
     </UserRightsContext.Provider>
   );
 };
 
+ feat/rights-sidebar
 export const useRights = () => {
   const context = useContext(UserRightsContext);
   if (!context) {
@@ -55,3 +65,6 @@ export const useRights = () => {
   }
   return context;
 };
+
+export const useRights = () => useContext(UserRightsContext);
+ dev
