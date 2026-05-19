@@ -11,13 +11,13 @@ function App() {
       <AuthProvider>
         <UserRightsProvider>
           <Routes>
-            {/* Public Route */}
+            {/* 🌐 Public Route: Authentication Gateway */}
             <Route path="/login" element={<Login />} />
 
-            {/* Main Application Route */}
+            {/* 📊 Main Application Route: Protected Workspace */}
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Fallback: Kapag maling URL, babalik sa login */}
+            {/* 🔄 Fallback Redirection: Route unrecognized URLs back to the login terminal */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </UserRightsProvider>
