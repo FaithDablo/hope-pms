@@ -8,10 +8,10 @@
 
 | Role Token | Team Member | Primary Responsibility | Assigned Deliverables |
 | :--- | :--- | :--- | :--- |
-| **M1** | **Faith Dablo** | Project Lead / Full-Stack Dev | API Services, Core Security, Repository Management |
-| **M2** | *Teammate Name* | Frontend UI Developer | Product Modals, Grid Interfacing, Dashboard Views |
-| **M3** | *Teammate Name* | Database & Integration | RLS Ruleset Verification, Schema Structuring |
-| **M5** | **Faith Dablo** | QA Engineer / Documenter | Rights Matrix Testing, Edge Case Logs, Activity Logs |
+| 👑 **M1** | **Faith Dablo** | **Project Lead / Full-Stack Dev** | API Services, Core Security, Repository Setup |
+| 🎨 **M2** | *Teammate Name* | Frontend UI Developer | Product Modals, Grid Interfacing, Dashboard Views |
+| 🗄️ **M3** | *Teammate Name* | Database & Integration | RLS Ruleset Verification, Schema Structuring |
+| 🛡️ **M5** | **Faith Dablo** | **QA Engineer / Documenter** | Rights Matrix Testing, Edge Case Logs, Activity Logs |
 
 ---
 
