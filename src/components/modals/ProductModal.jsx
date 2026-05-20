@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from "../../lib/supabase";
 
 const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuccess }) => {
   const [prodCode, setProdCode] = useState('');
@@ -33,14 +33,13 @@ const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuc
       const cleanUnit = unit.trim().toLowerCase();
 
       if (mode === 'add') {
-        // Mag-insert sa 'product' table
+        // LUNAS: Tinanggal ang 'record_status' column dahil wala ito sa inyong table structure
         const { error: prodError } = await supabase
           .from('product')
           .insert([{ 
             prodcode: prodCode.trim(), 
             description: description.trim(), 
-            unit: cleanUnit,
-            record_status: 'ACTIVE'
+            unit: cleanUnit
           }]);
 
         if (prodError) throw prodError;
@@ -91,7 +90,7 @@ const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuc
           <h3 className="text-lg font-bold text-slate-800">
             {mode === 'add' ? 'Add New Product' : 'Edit Product'}
           </h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={onClose} type="button" className="text-slate-400 hover:text-slate-600 transition-colors">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -105,7 +104,7 @@ const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuc
             <input 
               type="text" 
               required
-              disabled={mode === 'edit'} // Hindi pwedeng palitan ang Code kapag nag-e-edit (Primary Key)
+              disabled={mode === 'edit'} // Primary Key locking control
               value={prodCode}
               onChange={(e) => setProdCode(e.target.value)}
               placeholder="e.g., AD0005"
@@ -127,7 +126,7 @@ const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuc
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* UNIT DROPDOWN (PR-02 Fix para sa check constraint) */}
+            {/* UNIT DROPDOWN */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Unit</label>
               <select
@@ -146,8 +145,8 @@ const ProductModal = ({ isOpen, onClose, mode = 'add', initialData = null, onSuc
               <input 
                 type="number" 
                 step="0.01"
-                required={mode === 'add'} // Required lang kapag bagong gawa para sa pricehist
-                disabled={mode === 'edit'} // Para sa Edit, doon ito babaguhin sa Price History Panel (PR-03)
+                required={mode === 'add'} 
+                disabled={mode === 'edit'} 
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="0.00"

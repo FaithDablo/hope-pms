@@ -9,12 +9,21 @@ CREATE TABLE "user" (
   stamp VARCHAR(60)
 );
 
+
 -- MODULE TABLE
 CREATE TABLE module (
   module_id VARCHAR(20) PRIMARY KEY,
   module_name VARCHAR(50)
 );
-cd Supabase
+
+
+-- RIGHTS TABLE
+CREATE TABLE rights (
+  right_id VARCHAR(20) PRIMARY KEY,
+  right_name VARCHAR(50)
+);
+
+
 -- USER_MODULE TABLE
 CREATE TABLE user_module (
   userid VARCHAR(20),
@@ -24,8 +33,9 @@ CREATE TABLE user_module (
   stamp VARCHAR(60)
 );
 
+
 -- USER MODULE RIGHTS TABLE
-CREATE TABLE usermodule_rights (
+CREATE TABLE UserModule_Rights (
   userid VARCHAR(20),
   right_id VARCHAR(20),
   right_value INT,
@@ -33,39 +43,76 @@ CREATE TABLE usermodule_rights (
   stamp VARCHAR(60)
 );
 
--- SUPERADMIN USER
-INSERT INTO "user" VALUES (
-  'U001',
-  'superadmin',
-  'Super',
-  'Admin',
-  'SUPERADMIN',
-  'ACTIVE',
-  '2026-01-01'
+
+
+
+ALTER TABLE public."user" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.usermodule_rights ENABLE ROW LEVEL SECURITY;
+
+
+DROP POLICY IF EXISTS admin_update_user_status_only ON public."user";
+DROP POLICY IF EXISTS protect_superadmin_rights ON public.usermodule_rights;
+
+
+CREATE POLICY admin_update_user_status_only
+ON public."user"
+FOR UPDATE
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public."user" current_user_row
+    WHERE current_user_row.userid = auth.uid()::text
+    AND current_user_row.user_type IN ('ADMIN', 'SUPERADMIN')
+  )
+  AND user_type != 'SUPERADMIN'
+)
+WITH CHECK (
+  user_type != 'SUPERADMIN'
 );
 
--- MODULES
-INSERT INTO module VALUES ('M001','Products');
-INSERT INTO module VALUES ('M002','Sales');
-INSERT INTO module VALUES ('M003','Users');
 
--- RIGHTS
-INSERT INTO rights VALUES ('R001','CREATE');
-INSERT INTO rights VALUES ('R002','READ');
-INSERT INTO rights VALUES ('R003','UPDATE');
-INSERT INTO rights VALUES ('R004','DELETE');
+CREATE POLICY protect_superadmin_rights
+ON public.usermodule_rights
+FOR ALL
+TO authenticated
+USING (
+  userid NOT IN (
+    SELECT userid
+    FROM public."user"
+    WHERE user_type = 'SUPERADMIN'
+  )
+)
+WITH CHECK (
+  userid NOT IN (
+    SELECT userid
+    FROM public."user"
+    WHERE user_type = 'SUPERADMIN'
+  )
+);
 
--- USER MODULE ACCESS (FULL ACCESS = 1)
-INSERT INTO user_module VALUES ('U001','M001',1,'ACTIVE','2026');
-INSERT INTO user_module VALUES ('U001','M002',1,'ACTIVE','2026');
-INSERT INTO user_module VALUES ('U001','M003',1,'ACTIVE','2026');
 
--- USER RIGHTS (ALL PERMISSIONS)
-INSERT INTO usermodule_rights VALUES ('U001','R001',1,'ACTIVE','2026');
-INSERT INTO usermodule_rights VALUES ('U001','R002',1,'ACTIVE','2026');
-INSERT INTO usermodule_rights VALUES ('U001','R003',1,'ACTIVE','2026');
-INSERT INTO usermodule_rights VALUES ('U001','R004',1,'ACTIVE','2026');
+UPDATE public."user"
+SET user_type = 'SUPERADMIN',
+    record_status = 'ACTIVE'
+WHERE username = 'jcesperanza@neu.edu.ph';
 
-UPDATE "user"
-SET username = 'jcesperanza@neu.edu.ph'
-WHERE userid = 'U001';
+
+UPDATE public."user"
+SET user_type = 'ADMIN',
+    record_status = 'ACTIVE'
+WHERE username IN (
+  'ashleydennise.alberto@neu.edu.ph',
+  'faith.dablo@neu.edu.ph',
+  'princess.pulgo@neu.edu.ph'
+);
+
+
+UPDATE public."user"
+SET user_type = 'USER'
+WHERE username NOT IN (
+  'jcesperanza@neu.edu.ph',
+  'ashleydennise.alberto@neu.edu.ph',
+  'faith.dablo@neu.edu.ph',
+  'princess.pulgo@neu.edu.ph'
+);

@@ -1,4 +1,38 @@
+import React, { useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
+
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      // 1. Kunin ang current user session
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        navigate('/login');
+        return;
+      }
+
+      // 2. I-verify ang status sa 'user' table base sa iyong DB
+      const { data: userData, error: dbError } = await supabase
+        .from('user')
+        .select('record_status')
+        .eq('id', user.id)
+        .single();
+
+      // 3. Kung INACTIVE, i-sign out at sipain pabalik sa login
+      if (userData?.record_status === 'INACTIVE') {
+        await supabase.auth.signOut();
+        // Nagpapasa tayo ng state para alam ng Login page kung bakit siya pinalabas
+        navigate('/login', { state: { message: "Access Denied: Your account is INACTIVE." } });
+      }
+    };
+
+    checkUserStatus();
+  }, [navigate]);
+
   return (
     <div className="space-y-8">
       {/* Breadcrumb */}
@@ -42,7 +76,7 @@ const Dashboard = () => {
   );
 };
 
-// Helper Components
+// Helper Components (Manatiling pareho ang design mo)
 const StatCard = ({ title, value, change, icon, action }) => (
   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between gap-4">
     <div className="flex flex-col gap-1">
