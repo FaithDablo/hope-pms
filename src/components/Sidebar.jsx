@@ -1,4 +1,24 @@
 import React from 'react';
+ feat/rights-audit-logs
+import { useRights } from '../context/UserRightsContext';
+
+const ProductActions = () => {
+  const { canAdd, canEdit, canDelete } = useRights();
+
+  return (
+    <div className="flex gap-2">
+      {canAdd && (
+        <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg">
+          Add Product
+        </button>
+      )}
+      
+      <button 
+        disabled={!canEdit} 
+        className="disabled:opacity-50 disabled:cursor-not-allowed bg-slate-100 text-slate-700 px-4 py-2 rounded-lg"
+      >
+        Edit Details
+
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRights } from '../context/UserRightsContext';
@@ -76,9 +96,13 @@ const Sidebar = () => {
         className="flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-red-950/40 hover:text-red-400 transition-all border border-transparent hover:border-red-900/30"
       >
         <span className="material-symbols-outlined">logout</span> Logout
+ dev
       </button>
     </div>
   );
 };
+ feat/rights-audit-logs
+
 
 export default Sidebar;
+ dev
