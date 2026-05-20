@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase'; 
 import { useAuth } from './AuthContext';
 
 // 1. Initialize the shared React Context for Role and Feature-Based Access Control

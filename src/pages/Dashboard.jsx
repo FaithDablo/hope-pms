@@ -1,9 +1,46 @@
+ fix/ui-polish
+import React, { useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      // 1. Kunin ang current user session
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        navigate('/login');
+        return;
+      }
+
+      // 2. I-verify ang status sa 'user' table base sa iyong DB
+      const { data: userData, error: dbError } = await supabase
+        .from('user')
+        .select('record_status')
+        .eq('id', user.id)
+        .single();
+
+      // 3. Kung INACTIVE, i-sign out at sipain pabalik sa login
+      if (userData?.record_status === 'INACTIVE') {
+        await supabase.auth.signOut();
+        // Nagpapasa tayo ng state para alam ng Login page kung bakit siya pinalabas
+        navigate('/login', { state: { message: "Access Denied: Your account is INACTIVE." } });
+      }
+    };
+
+    checkUserStatus();
+  }, [navigate]);
+
 import React from 'react';
 import Sidebar from '../components/Sidebar'; // Ensure path securely targets your Sidebar module
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user } = useAuth();
+ dev
 
   return (
     <div className="flex bg-slate-50 min-h-screen">
@@ -59,4 +96,31 @@ const Dashboard = () => {
   );
 };
 
+ fix/ui-polish
+// Helper Components (Manatiling pareho ang design mo)
+const StatCard = ({ title, value, change, icon, action }) => (
+  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between gap-4">
+    <div className="flex flex-col gap-1">
+      <p className="text-xs text-slate-500 tracking-wider uppercase">{title}</p>
+      <p className="font-bold text-3xl text-indigo-950">{value}</p>
+    </div>
+    <div className="flex flex-col items-end gap-3 text-right">
+      <div className="p-3 rounded-lg bg-indigo-50 text-indigo-600">
+        <span className="material-symbols-outlined text-2xl">{icon}</span>
+      </div>
+      {change && <span className={`font-medium text-sm ${change === 'MTD' ? 'text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full' : 'text-green-600 bg-green-50 px-3 py-1 rounded-full'}`}>{change}</span>}
+      {action && <span className={`font-medium text-sm ${action === 'Live' ? 'text-green-600 bg-green-50 px-3 py-1 rounded-full' : 'text-orange-600 bg-orange-50 px-3 py-1 rounded-full'}`}>{action}</span>}
+    </div>
+  </div>
+);
+
+const Tab = ({ label, active }) => (
+  <button className={`px-4 py-2 font-medium rounded-lg ${active ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`}>
+    {label}
+  </button>
+);
+
 export default Dashboard;
+
+export default Dashboard;
+ dev

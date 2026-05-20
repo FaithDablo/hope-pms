@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+ fix/ui-polish
+
  feat/ui-product-list
  test/sprint1-auth-flows-final
 
@@ -18,16 +20,18 @@
 
 
  dev
+ dev
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
- main
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
+    "chart.js": "^4.5.1",
     "react": "^19.2.5",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.15.0"
   },
