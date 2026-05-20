@@ -1,25 +1,27 @@
-import { useState, useEffect, cloneElement } from 'react'; 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react'; 
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase'; 
 
-const Layout = ({ children }) => {
+import ProductListPage from '../pages/ProductListPage';
+import ProductReportPage from '../pages/ProductReportPage';
+import UserManagementPage from '../pages/UserManagementPage';
+import TopSellingPage from '../pages/TopSellingPage';
+
+const Layout = ({ userRole: initialUserRole }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [user, setUser] = useState(null); 
-  const [searchQuery, setSearchQuery] = useState(''); // Estado para sa Search Input
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeView, setActiveView] = useState('Product List'); 
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
     };
-
     getSession();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -28,27 +30,27 @@ const Layout = ({ children }) => {
     navigate('/login');
   };
 
-  const userRole = user?.user_metadata?.role || 'USER';
-  const isAdmin = userRole === 'ADMIN' || userRole === 'SUPERADMIN';
+  const userRole = initialUserRole || user?.user_metadata?.role || 'USER';
+  const isAdminOrSuper = userRole === 'ADMIN' || userRole === 'SUPERADMIN';
+  const isSuperAdmin = userRole === 'SUPERADMIN';
 
+  // Ipinapasa ang searchQuery prop sa lahat ng components
   const navLinks = [
-    { icon: 'inventory_2', label: 'Product List', path: '/products' }, 
-    { icon: 'bar_chart', label: 'Reports', path: '/reports' },
-    
-    // PR-04: Sidebar 'Deleted Items'
-    ...(isAdmin ? [
-      { icon: 'delete_sweep', label: 'Deleted Items', path: '/deleted-items' }
+    { icon: 'inventory_2', label: 'Product List', component: <ProductListPage searchQuery={searchQuery} /> },
+    ...(isAdminOrSuper ? [
+      { icon: 'description', label: 'Product Report', component: <ProductReportPage searchQuery={searchQuery} /> },
+      { icon: 'admin_panel_settings', label: 'User Management', component: <UserManagementPage /> }
     ] : []),
-    
-    { icon: 'admin_panel_settings', label: 'Admin', path: '/admin' },
+    ...(isSuperAdmin ? [
+      { icon: 'trending_up', label: 'Top Selling Products', component: <TopSellingPage searchQuery={searchQuery} /> }
+    ] : []),
   ];
 
+  const activeComponent = navLinks.find(link => link.label === activeView)?.component || <ProductListPage searchQuery={searchQuery} />;
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest User';
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      
-      {/* SIDEBAR */}
       <aside className="w-64 border-r border-slate-200 bg-white p-6 hidden md:flex flex-col">
         <div className="flex items-center gap-3 mb-10">
           <div className="p-3 rounded-xl bg-indigo-600 text-white">
@@ -60,89 +62,52 @@ const Layout = ({ children }) => {
           </div>
         </div>
         
-        <nav className="flex-1 space-y-3">
+        <nav className="flex-1 space-y-2">
           {navLinks.map((link) => (
             <button 
-              key={link.path}
-              onClick={() => navigate(link.path)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl font-medium transition-colors ${
-                location.pathname === link.path ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100'
+              key={link.label}
+              onClick={() => setActiveView(link.label)}
+              className={`w-full flex items-center justify-start text-left gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+                activeView === link.label ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              <span className="material-symbols-outlined">{link.icon}</span> {link.label}
+              <span className="material-symbols-outlined min-w-[24px] text-center">{link.icon}</span> 
+              <span className="text-sm truncate">{link.label}</span>
             </button>
           ))}
         </nav>
-        
-        <div className="border-t border-slate-200 pt-6 space-y-3 relative">
-          <button 
-            onClick={() => navigate('/products')} 
-            className="w-full flex items-center gap-3 p-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700"
-          >
-            <span className="material-symbols-outlined">add</span> New Product
-          </button>
-          
-          <NavLink icon="help_center" label="Help Center" />
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 font-medium hover:bg-red-50 transition-colors">
-            <span className="material-symbols-outlined">logout</span> Logout
-          </button>
-        </div>
       </aside>
 
-      {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col">
-        {/* NAVBAR */}
+        {/* Global Header na may Central Search Bar */}
         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8">
           <div className="relative w-96">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-            {/* PINAGANA ANG SEARCH INPUT */}
             <input 
               type="search" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products by code or name..." 
+              placeholder="Search products across all modules..." 
               className="w-full pl-12 pr-4 py-3 bg-slate-100 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-700" 
             />
           </div>
-          <div className="flex items-center gap-6">
-            <IconButton icon="notifications" />
-            <IconButton icon="settings" />
-            
-            {/* DYNAMIC USER PROFILE */}
-            <div className="flex items-center gap-3 border-l pl-6 border-slate-100">
-              <div className="text-right">
-                <p className="font-semibold text-indigo-950 capitalize">{displayName}</p>
-                <p className="text-xs text-slate-500">{user ? `${userRole} Access` : 'Guest'}</p>
-              </div>
-              <img 
-                src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user?.id || 'default'}`} 
-                alt="Avatar" 
-                className="w-11 h-11 rounded-full border-2 border-indigo-50 object-cover" 
-              />
+          <div className="flex items-center gap-5">
+            <div className="text-right">
+              <p className="font-semibold text-indigo-950 capitalize text-sm">{displayName}</p>
+              <p className="text-[11px] font-bold text-indigo-600 tracking-wide uppercase">{userRole} ACCESS</p>
             </div>
+            <button onClick={handleLogout} className="p-2.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50">
+              <span className="material-symbols-outlined">logout</span>
+            </button>
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
         <main className="flex-1 overflow-auto p-8 bg-slate-100">
-          {/* I-papasa ang searchQuery string sa laman/children ng Layout */}
-          {cloneElement(children, { searchQuery })}
+          {activeComponent}
         </main>
       </div>
     </div>
   );
 };
-
-const NavLink = ({ icon, label }) => (
-  <a href="#" className="flex items-center gap-3 p-3 rounded-xl text-slate-600 font-medium hover:bg-slate-100 transition-colors">
-    <span className="material-symbols-outlined">{icon}</span> {label}
-  </a>
-);
-
-const IconButton = ({ icon }) => (
-  <button className="text-slate-500 hover:text-indigo-600 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-    <span className="material-symbols-outlined text-2xl">{icon}</span>
-  </button>
-);
 
 export default Layout;

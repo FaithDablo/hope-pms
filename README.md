@@ -1,4 +1,13 @@
+ main
 # 🏥 HopePMS - Hospital Product Management System
+
+ feat/ui-product-list
+ docs/sprint1-log-readme
+
+ dev
+# Hope PMS Project 
+## Setup Instructions
+ dev
 
 > **Sprint 2 Core Development & QA Framework** > A secure, multi-role medical inventory and pricing tracker built with React, Vite, and Supabase.
 

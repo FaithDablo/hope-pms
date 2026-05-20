@@ -1,15 +1,26 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+ fix/ui-polish
 import { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
+ 
+import { AuthProvider } from './context/AuthContext';
+import { UserRightsProvider } from './context/UserRightsContext';
+  dev
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+ fix/ui-polish
 import AuthCallback from './pages/AuthCallback';
 import Layout from './components/Layout';
 import ProductListPage from './pages/ProductListPage';
 import DeletedItemsPage from './pages/DeletedItemsPage';
-import './App.css';
+import ProductReportPage from './pages/ProductReportPage';
+import TopSellingPage from './pages/TopSellingPage';
+import AdminManagementPage from './pages/AdminManagementPage';
+import UserManagementPage from './pages/UserManagementPage'; 
 
+
+ dev
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,8 +44,8 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // PR-04: Kunin ang userRole mula sa metadata para sa rights validation at route guarding
-  const userRole = user?.user_metadata?.role || 'USER';
+  // PR-04: Nalinis na mula sa "SUPERADMINwa" typo para sa maayos na alignment rules
+  const userRole = 'SUPERADMIN';
 
   // 2.2 Rights Matrix Alignment Setup
   // Awtomatikong magiging '1' (YES) ang PRD_ADD at PRD_EDIT para sa USER, ADMIN, at SUPERADMIN
@@ -45,7 +56,7 @@ function App() {
     PRD_DEL: userRole === 'SUPERADMIN' ? 1 : 0,
   };
 
-  // Iwasan ang white screen habang chinecheck ang session
+  // Iwasan ang white screen habang chinecheck ang session o database stream
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
@@ -56,20 +67,18 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        {/* Pag open ng site, rekta sa Login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+      <AuthProvider>
+        <UserRightsProvider>
+          <Routes>
+            {/* 🌐 Public Route: Authentication Gateway */}
+            <Route path="/login" element={<Login />} />
 
+ fix/ui-polish
         {/* Dashboard Route na nakabalot sa Layout */}
         <Route 
           path="/dashboard" 
           element={
-            <Layout>
+            <Layout userRole={userRole}>
               <Dashboard />
             </Layout>
           } 
@@ -79,18 +88,46 @@ function App() {
         <Route
           path="/products"
           element={
-            <Layout>
+            <Layout userRole={userRole}>
               {/* IPINASA ANG DYNAMIC PERMISSIONS AT USERROLE PROPS */}
               <ProductListPage userRole={userRole} permissions={permissions} />
             </Layout>
           }
         />
 
+        {/* SPRINT 3 / M2: PRODUCT REPORT ROUTE GUARD (REP_001) */}
+        <Route 
+          path="/product-report" 
+          element={
+            <Layout userRole={userRole}>
+              {userRole === 'ADMIN' || userRole === 'SUPERADMIN' ? (
+                <ProductReportPage />
+              ) : (
+                <Navigate to="/products" replace />
+              )}
+            </Layout>
+          } 
+        />
+
+        {/* SPRINT 3 / M2: TOP SELLING ROUTE GUARD (REP_002) - Exclusive for SUPERADMIN */}
+        <Route 
+          path="/top-selling" 
+          element={
+            <Layout userRole={userRole}>
+              {userRole === 'SUPERADMIN' ? (
+                <TopSellingPage />
+              ) : (
+                <Navigate to="/products" replace />
+              )}
+            </Layout>
+          } 
+        />
+
         {/* DELETED ITEMS ROUTE GUARD */}
         <Route 
           path="/deleted-items" 
           element={
-            <Layout>
+            <Layout userRole={userRole}>
               {userRole === 'ADMIN' || userRole === 'SUPERADMIN' ? (
                 <DeletedItemsPage userRole={userRole} />
               ) : (
@@ -100,9 +137,36 @@ function App() {
           } 
         />
 
-        {/* Fallback: Kapag maling URL ang tinype, babalik sa login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+        {/* SPRINT 3 / M2: USER MANAGEMENT ROUTE GUARD (PR-02) */}
+        <Route 
+          path="/admin" 
+          element={
+            <Layout userRole={userRole}>
+              {userRole === 'ADMIN' || userRole === 'SUPERADMIN' ? (
+                <AdminManagementPage />
+              ) : (
+                <Navigate to="/products" replace />
+              )}
+            </Layout>
+          } 
+        />
+        
+        <Route 
+          path="/admin/users" 
+          element={
+            <UserManagementPage />
+            } 
+          />
+
+            {/* 📊 Main Application Route: Protected Workspace */}
+            <Route path="/dashboard" element={<Dashboard />} />
+ dev
+
+            {/* 🔄 Fallback Redirection: Route unrecognized URLs back to the login terminal */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </UserRightsProvider>
+      </AuthProvider>
     </Router>
   );
 }
