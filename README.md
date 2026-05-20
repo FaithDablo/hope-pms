@@ -1,55 +1,62 @@
- docs/sprint1-log-readme
-# Hope PMS Project 
-## Setup Instructions
+# 🏥 HopePMS - Hospital Product Management System
 
-### Clone the repository
+> **Sprint 2 Core Development & QA Framework** > A secure, multi-role medical inventory and pricing tracker built with React, Vite, and Supabase.
 
-```bash
-git clone https://github.com/FaithDablo/hope-pms.git
-cd hope-pms
-```
+---
 
-### Install dependencies
+## 👥 Project Team Role Assignments
 
-```bash
-npm install
-```
+| Role Token | Team Member | Primary Responsibility | Assigned Deliverables |
+| :--- | :--- | :--- | :--- |
+| **M1** | **Faith Dablo** | Project Lead / Full-Stack Dev | API Services, Core Security, Repository Management |
+| **M2** | *Teammate Name* | Frontend UI Developer | Product Modals, Grid Interfacing, Dashboard Views |
+| **M3** | *Teammate Name* | Database & Integration | RLS Ruleset Verification, Schema Structuring |
+| **M5** | **Faith Dablo** | QA Engineer / Documenter | Rights Matrix Testing, Edge Case Logs, Activity Logs |
 
-### Environment setup
+---
 
-Create a `.env` file in the project root.
+## ⚡ Sprint 2 Core Features
 
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+### 🔐 1. Role-Based Access Control (RBAC) & Security
+* **App-Level Integration:** Implemented a global `UserRightsContext` powered by the custom `useRights()` hook to intercept and stream permissions seamlessly to all active interfaces.
+* **Route Guards:** Embedded a hard dynamic `RouteGuard.jsx` component that explicitly locks the `/deleted-items` administration node, safely bouncing regular `USER` accounts back to safe layouts.
 
-### Run development server
+### 📦 2. Scalable Supabase Service Layer
+* **`productService.js`:** Custom data functions handling real-time inventory hooks (`getProducts`, `addProduct`, `updateProduct`). Integrates automated application-level **Soft Delete** logic by manipulating row metrics using `ACTIVE`/`INACTIVE` record states.
+* **`priceService.js`:** Secure pipeline tracking asset modification loops. It captures database snapshots and populates individual history mappings within the `priceHist` ledger schema.
 
-```bash
-npm run dev
-```
+---
 
-### Run tests
+## 🧪 Quality Assurance & Test Logs (M5)
 
-```bash
-npm run test
-```
-=======
-# React + Vite
+Comprehensive testing maps were executed against deployment targets to guarantee codebase stability.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 📊 1. Rights Matrix Validation (18-Case Grid)
+Ensures granular data views depending on current account claims (`USER`, `ADMIN`, `SUPERADMIN`). All access tokens dynamically pass schema assertions.
+* 📂 **Logs Location:** `test/rights-matrix-results.md`
 
-Currently, two official plugins are available:
+### 🛡️ 2. Constraint & Boundary Testing (14-Case Map)
+Validates network defense behavior against structural edge cases like null payloads, negative price alterations, malicious script injections, and expired session handshakes.
+* 📂 **Logs Location:** `test/edge-case-testing.md`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🛠️ Repository Architecture & File Blueprint
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The codebase features a modular structural mapping designed to avoid integration conflicts:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
- main
+```text
+src/
+├── 📁 components/
+│   └── 📄 RouteGuard.jsx            # Dynamic client-side route security gate
+├── 📁 context/
+│   └── 📄 UserRightsContext.jsx     # Global React state hook for user identities
+├── 📁 services/
+│   ├── 📄 productService.js          # Direct Supabase bindings for product records
+│   └── 📄 priceService.js            # History mapping services for cost adjustments
+├── 📄 supabaseClient.js             # Initial system connectivity client
+test/
+├── 📄 rights-matrix-results.md      # Official 18-case QA security validation
+└── 📄 edge-case-testing.md          # 14-point edge-case system testing data
+docs/
+└── 📄 sprint2-activity-log.md       # Technical audit logs, bugs, and resolution briefs
