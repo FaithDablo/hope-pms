@@ -1,9 +1,15 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+ fix/ui-polish
 import { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
+ 
+import { AuthProvider } from './context/AuthContext';
+import { UserRightsProvider } from './context/UserRightsContext';
+  dev
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+ fix/ui-polish
 import AuthCallback from './pages/AuthCallback';
 import Layout from './components/Layout';
 import ProductListPage from './pages/ProductListPage';
@@ -12,6 +18,9 @@ import ProductReportPage from './pages/ProductReportPage';
 import TopSellingPage from './pages/TopSellingPage';
 import AdminManagementPage from './pages/AdminManagementPage';
 import UserManagementPage from './pages/UserManagementPage'; 
+
+
+ dev
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,15 +67,13 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        {/* Pag open ng site, rekta sa Login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+      <AuthProvider>
+        <UserRightsProvider>
+          <Routes>
+            {/* 🌐 Public Route: Authentication Gateway */}
+            <Route path="/login" element={<Login />} />
 
+ fix/ui-polish
         {/* Dashboard Route na nakabalot sa Layout */}
         <Route 
           path="/dashboard" 
@@ -151,9 +158,15 @@ function App() {
             } 
           />
 
-        {/* Fallback: Kapag maling URL ang tinype, babalik sa login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+            {/* 📊 Main Application Route: Protected Workspace */}
+            <Route path="/dashboard" element={<Dashboard />} />
+ dev
+
+            {/* 🔄 Fallback Redirection: Route unrecognized URLs back to the login terminal */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </UserRightsProvider>
+      </AuthProvider>
     </Router>
   );
 }

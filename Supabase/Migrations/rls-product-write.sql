@@ -35,5 +35,9 @@ USING (
         WHERE u.userid = auth.uid()::text
         AND u.user_type = 'SUPERADMIN'
     )
+ fix/ui-polish
 );
 
+
+);
+ dev
