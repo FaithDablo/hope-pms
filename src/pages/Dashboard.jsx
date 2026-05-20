@@ -1,3 +1,4 @@
+ feat/rights-superadmin-guard
 import React, { useState } from 'react';
 
 const UserManagement = () => {
@@ -104,11 +105,112 @@ const UserManagement = () => {
           </table>
         </div>
       </div>
+
+ fix/ui-polish
+import React, { useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      // 1. Kunin ang current user session
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        navigate('/login');
+        return;
+      }
+
+      // 2. I-verify ang status sa 'user' table base sa iyong DB
+      const { data: userData, error: dbError } = await supabase
+        .from('user')
+        .select('record_status')
+        .eq('id', user.id)
+        .single();
+
+      // 3. Kung INACTIVE, i-sign out at sipain pabalik sa login
+      if (userData?.record_status === 'INACTIVE') {
+        await supabase.auth.signOut();
+        // Nagpapasa tayo ng state para alam ng Login page kung bakit siya pinalabas
+        navigate('/login', { state: { message: "Access Denied: Your account is INACTIVE." } });
+      }
+    };
+
+    checkUserStatus();
+  }, [navigate]);
+
+import React from 'react';
+import Sidebar from '../components/Sidebar'; // Ensure path securely targets your Sidebar module
+import { useAuth } from '../context/AuthContext';
+
+const Dashboard = () => {
+  const { user } = useAuth();
+ dev
+
+  return (
+    <div className="flex bg-slate-50 min-h-screen">
+      {/* 1. Integrated Gated Sidebar Navigation Component */}
+      <Sidebar />
+
+      {/* 2. Main Canvas Area (Offset with pl-64 to accommodate the fixed position navigation bar layout) */}
+      <main className="flex-1 pl-64 p-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+          
+          {/* Header Metric Card */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800">Welcome back, Representative!</h2>
+              <p className="text-slate-500 text-sm mt-1">
+                Logged in as: <span className="font-semibold text-indigo-600">{user?.email}</span>
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-4xl text-indigo-500 bg-indigo-50 p-3 rounded-xl">waving_hand</span>
+          </div>
+
+          {/* Interactive Stat Cards Canvas Dashboard Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Metric Box 1: Core System Specifications */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+              <span className="material-symbols-outlined text-indigo-500 bg-indigo-50 p-2 rounded-lg">analytics</span>
+              <h3 className="text-slate-400 font-medium text-sm mt-3">System Version</h3>
+              <p className="text-2xl font-bold text-slate-800 mt-1">v2.0.26</p>
+            </div>
+            
+            {/* Metric Box 2: RLS Integrity Controls */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+              <span className="material-symbols-outlined text-emerald-500 bg-emerald-50 p-2 rounded-lg">shield</span>
+              <h3 className="text-slate-400 font-medium text-sm mt-3">Security Modules</h3>
+              <p className="text-2xl font-bold text-slate-800 mt-1">Active</p>
+            </div>
+            
+            {/* Metric Box 3: Role Validation Profiles */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+              <span className="material-symbols-outlined text-amber-500 bg-amber-50 p-2 rounded-lg">badge</span>
+              <h3 className="text-slate-400 font-medium text-sm mt-3">Current Role</h3>
+              <p className="text-2xl font-bold text-slate-800 mt-1">
+                {user?.user_metadata?.role || 'User'}
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+ dev
     </div>
   );
 };
 
+ feat/rights-superadmin-guard
 // Layout Helper Sub-component: Summary Cards Dashboard Unit
+
+ fix/ui-polish
+// Helper Components (Manatiling pareho ang design mo)
+ dev
 const StatCard = ({ title, value, change, icon, action }) => (
   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between gap-4">
     <div className="flex flex-col gap-1">
@@ -132,4 +234,11 @@ const Tab = ({ label, active }) => (
   </button>
 );
 
+ feat/rights-superadmin-guard
 export default UserManagement;
+
+export default Dashboard;
+
+export default Dashboard;
+ dev
+ dev

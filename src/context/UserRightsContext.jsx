@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase'; 
 import { useAuth } from './AuthContext';
 
 // 1. Initialize the shared React Context for Role and Feature-Based Access Control
@@ -38,7 +38,11 @@ export const UserRightsProvider = ({ children }) => {
     fetchRights();
   }, [user]); // Re-evaluates permissions dynamically whenever the authenticated state shifts
 
+ feat/rights-superadmin-guard
   // Centralized Gating Logic for Workspace Permissions and RBAC Security Controls
+
+  // Centralized Gating Logic for Sidebar and Permissions
+ dev
   const value = {
     rights,
     loading,
