@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+ feat/rights-superadmin-guard
+import { supabase } from '../lib/supabase'; // Targets your project's unified client initialization instance
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+ dev
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,10 +12,21 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  // PATH 1: Traditional Email & Password Credential Authenticator Strategy
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     
+ feat/rights-superadmin-guard
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
+    if (error) {
+      alert(error.message);
+    } else {
+      alert('Welcome back! Login successful.');
+    }
+    setLoading(false);
+
     // 1. Auth Check (Email & Password)
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -47,20 +61,43 @@ const Login = () => {
       provider: 'google',
       options: { redirectTo: window.location.origin + '/auth/callback' },
     });
+ dev
+  };
+
+  // PATH 2: Federated Identity Provider (Google OAuth) Pipeline
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { 
+        // Generates dynamic redirect path routing relative to the executing environment host context
+        redirectTo: window.location.origin + '/auth/callback' 
+      },
+    });
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 relative font-['Inter']">
       
+ feat/rights-superadmin-guard
+      {/* Structural Glassmorphic Background Canvas Visual Elements */}
+
       {/* Background Visuals - Design Maintained */}
+ dev
       <div className="fixed inset-0 -z-10 bg-[#f8faff]">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#3525cd]/10 rounded-full blur-[120px] animate-pulse delay-1000"></div>
         <div className="absolute inset-0 backdrop-blur-[100px]"></div>
       </div>
 
+ feat/rights-superadmin-guard
+      {/* Main Form Entry Portal Component Frame */}
+      <main className="w-full max-w-[450px] z-10 p-4">
+        
+        {/* Top Core Brand Panel Banner */}
+
       <main className="w-full max-w-[450px] z-10 p-4">
         {/* Header */}
+ dev
         <div className="flex flex-col items-center mb-6 text-center">
           <div className="bg-[#3525cd] shadow-lg shadow-[#3525cd]/30 p-2 rounded-xl mb-3 relative">
             <span className="material-symbols-outlined text-white text-3xl block">inventory_2</span>
@@ -71,7 +108,11 @@ const Login = () => {
           <p className="text-sm text-[#464555] mt-1 font-medium">Hope.Inc @2026</p>
         </div>
 
+ feat/rights-superadmin-guard
+        {/* Input Interface Wrapper featuring Frosted Glass Aesthetic Effects */}
+
         {/* Card */}
+ dev
         <div className="bg-white/70 backdrop-blur-md border border-white/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl overflow-hidden p-6 md:p-8">
           
           <div className="mb-6">
@@ -89,6 +130,10 @@ const Login = () => {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
+ feat/rights-superadmin-guard
+            {/* Email Field Node Input Wrapper */}
+
+ dev
             <div>
               <label className="block text-xs font-semibold text-[#0b1c30] mb-1 uppercase tracking-wider">Email address</label>
               <div className="relative">
@@ -100,6 +145,10 @@ const Login = () => {
               </div>
             </div>
 
+ feat/rights-superadmin-guard
+            {/* Password Field Node Input Wrapper */}
+
+ dev
             <div>
               <div className="flex justify-between mb-1">
                 <label className="text-xs font-semibold text-[#0b1c30] uppercase tracking-wider">Password</label>
@@ -114,18 +163,39 @@ const Login = () => {
               </div>
             </div>
 
+ feat/rights-superadmin-guard
+            {/* Core Submit Interface Form Access Button */}
+            <button 
+              className="w-full bg-[#3525cd] hover:bg-[#2b1ea3] text-white font-medium py-3 rounded-lg shadow-md active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed" 
+              type="submit" 
+              disabled={loading}
+
             <button 
               className="w-full bg-[#3525cd] hover:bg-[#2b1ea3] text-white font-medium py-3 rounded-lg shadow-md active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50" 
               type="submit" disabled={loading}
+ dev
             >
               {loading ? 'Verifying status...' : 'Sign in'}
             </button>
           </form>
 
-          {/* Divider */}
+          {/* Visual Element Divider Line */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#c7c4d8]"></div></div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+ feat/rights-superadmin-guard
+              <span className="bg-[#f3f5f9] px-2 text-[#464555] font-bold rounded">Or continue with</span>
+            </div>
+          </div>
+
+          {/* Third-Party Social Identity Google Gateway Access Trigger */}
+          <button 
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#c7c4d8] rounded-lg bg-white/80 hover:bg-white shadow-sm transition-all active:scale-[0.98]" 
+            type="button"
+          >
+            <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google Logo" />
+
               <span className="bg-[#f8faff] px-2 text-[#464555] font-bold">Or continue with</span>
             </div>
           </div>
@@ -133,10 +203,15 @@ const Login = () => {
           {/* Google SSO */}
           <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#c7c4d8] rounded-lg bg-white/80 hover:bg-white shadow-sm transition-all active:scale-[0.98]">
             <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
+ dev
             <span className="text-sm font-semibold text-[#0b1c30]">Sign in with Google</span>
           </button>
         </div>
 
+ feat/rights-superadmin-guard
+        {/* Workspace Footer Information Panel */}
+
+ dev
         <div className="mt-8 text-center">
           <p className="text-xs text-[#464555]">
             Don't have an account? <a className="text-[#3525cd] font-bold hover:underline" href="/register">Create now</a>

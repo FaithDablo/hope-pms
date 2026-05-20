@@ -38,7 +38,11 @@ export const UserRightsProvider = ({ children }) => {
     fetchRights();
   }, [user]); // Re-evaluates permissions dynamically whenever the authenticated state shifts
 
+ feat/rights-superadmin-guard
+  // Centralized Gating Logic for Workspace Permissions and RBAC Security Controls
+
   // Centralized Gating Logic for Sidebar and Permissions
+ dev
   const value = {
     rights,
     loading,

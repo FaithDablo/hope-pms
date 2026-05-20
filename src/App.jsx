@@ -1,10 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+ feat/rights-superadmin-guard
+
  feat/rights-audit-logs
+ dev
 import { AuthProvider } from './context/AuthContext';
 import { UserRightsProvider } from './context/UserRightsContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+ feat/rights-superadmin-guard
+import AdminRoute from './components/AdminRoute';
+
+// Temporary placeholders para sa protected routes (palitan kung may existing files na kayo)
+const UserManagement = () => <div className="pl-64 p-8"><h2>User Management (Admin Only)</h2></div>;
+const Settings = () => <div className="pl-64 p-8"><h2>System Settings (Admin Only)</h2></div>;
+
 import AuditLogs from './pages/AuditLogs'; // Successfully imported the newly created audit module page
 import AdminRoute from './components/AdminRoute';
 
@@ -77,12 +87,22 @@ function App() {
     );
   }
  dev
+ dev
 
   return (
     <Router>
       <AuthProvider>
         <UserRightsProvider>
           <Routes>
+ feat/rights-superadmin-guard
+            {/* Public Route */}
+            <Route path="/login" element={<Login />} />
+
+            {/* General Protected Route */}
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* 🔒 SUPERADMIN / ADMIN ONLY ROUTES */}
+
  feat/rights-audit-logs
             {/* 🌐 Public Route: Authentication Terminal Gateway */}
             <Route path="/login" element={<Login />} />
@@ -91,6 +111,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* 🔒 HIGH-PRIVILEGE ADMINISTRATIVE MODULE ENTRIES (GATED BY HOC SECURITY STRATEGY) */}
+ dev
             <Route 
               path="/users" 
               element={
@@ -107,6 +128,10 @@ function App() {
                 </AdminRoute>
               } 
             />
+ feat/rights-superadmin-guard
+
+            {/* Fallback */}
+
             <Route 
               path="/audit-logs" 
               element={
@@ -211,6 +236,7 @@ function App() {
  dev
 
             {/* 🔄 Fallback Redirection: Route unrecognized URLs back to the login terminal */}
+ dev
  dev
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
