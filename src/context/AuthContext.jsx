@@ -1,3 +1,9 @@
+/* // M1 Dablo, Faith —- PR-01: feat/reports-api // reportsService.js - REP_001 and REP_002 query functions.
+//| Each query extracts transaction metrics and core records mapped from database views.
+// All functions are read-only - handles product listing grids and superadmin trend matrices.
+*/
+
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase'; 
 
