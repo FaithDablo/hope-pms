@@ -1,5 +1,5 @@
- main
-# 🏥 HopePMS - Hospital Product Management System
+ 
+# 🏥 HopePMS -  Product Management System
 
  feat/ui-product-list
  docs/sprint1-log-readme
