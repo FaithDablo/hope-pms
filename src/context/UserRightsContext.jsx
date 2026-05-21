@@ -1,3 +1,7 @@
+// M1 Dablo, Faith —- PR-01: feat/sprint2-security // UserRightsContext.jsx - Global auth state broker.
+// Streams active role permissions context (SUPERADMIN, ADMIN, USER) dynamically across the DOM viewport.
+// Manages authentication event loops and hooks into state claims securely.
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase'; 
 import { useAuth } from './AuthContext';
