@@ -1,3 +1,7 @@
+// M1 Dablo, Faith —- PR-01: feat/sprint2-security // RouteGuard.jsx - Dynamic route interception.
+// Handshakes with UserRightsContext to block USER roles from accessing administration node.
+// All operations are read-only routing gates - redirects unauthorized tokens back to home.
+
 import { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase'; 
